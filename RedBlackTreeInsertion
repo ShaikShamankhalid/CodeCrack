@@ -1,0 +1,611 @@
+# Red-Black Tree — Insertion Only
+
+A **Red-Black Tree (RBT)** is a self-balancing Binary Search Tree (BST). It keeps the tree approximately balanced by assigning each node a **color: Red or Black**.
+
+The main advantage is that **search, insertion, and deletion take O(log n)** time. Since you asked for **insertion only**, we focus only on insertion and its balancing rules.
+
+---
+
+## 1. Rules of a Red-Black Tree
+
+There are **5 important rules**:
+
+1. Every node is either **RED** or **BLACK**.
+2. The **root is always BLACK**.
+3. Every NULL/NIL leaf is considered **BLACK**.
+4. A **RED node cannot have a RED child**.
+   - No two consecutive red nodes.
+5. Every path from a node to its descendant NULL leaves must contain the **same number of BLACK nodes**.
+
+### Easy memory trick
+
+**R-B-R-N-B**
+
+- **R** → Red or Black
+- **B** → Black Root
+- **R** → Red cannot have Red child
+- **N** → NULL is Black
+- **B** → Black count must be Balanced
+
+---
+
+# 2. Red-Black Tree Insertion
+
+Insertion starts exactly like a normal **BST insertion**.
+
+### Steps
+
+```text
+1. Insert the new node like a normal BST.
+2. Color the new node RED.
+3. Check whether Red-Black rules are violated.
+4. If parent is BLACK → DONE.
+5. If parent is RED → Fix the tree.
+6. Use recoloring and rotations.
+7. Finally make the root BLACK.
+```
+
+### Why is a new node RED?
+
+If we insert a BLACK node, it can increase the black-node count on one path and violate Rule 5.
+
+Inserting it as RED does **not initially change the black height**.
+
+---
+
+# 3. Cases During Insertion
+
+Suppose:
+
+```text
+        Grandparent
+        /         \
+    Parent       Uncle
+      /
+   New Node
+```
+
+The important situation is:
+
+```text
+New Node = RED
+Parent   = RED
+```
+
+This violates:
+
+> RED node cannot have RED child.
+
+There are mainly **two types of fixes**.
+
+---
+
+## Case 1: Uncle is RED
+
+Example:
+
+```text
+        10(B)
+       /    \
+    5(R)    15(R)
+    /
+  2(R)
+```
+
+Here:
+
+- Parent = 5(R)
+- Uncle = 15(R)
+- Grandparent = 10(B)
+
+### Recolor
+
+```text
+        10(R)
+       /    \
+    5(B)    15(B)
+    /
+  2(R)
+```
+
+Then make sure the root is BLACK:
+
+```text
+        10(B)
+       /    \
+    5(B)    15(B)
+    /
+  2(R)
+```
+
+### Rule
+
+```text
+Parent RED + Uncle RED
+        ↓
+Recolor Parent and Uncle BLACK
+        ↓
+Recolor Grandparent RED
+        ↓
+Continue checking upward
+```
+
+---
+
+# 4. Case 2: Uncle is BLACK
+
+Now rotations are required.
+
+There are four possible arrangements:
+
+| Case | Shape | Fix |
+|---|---|---|
+| LL | Left → Left | Right Rotation |
+| RR | Right → Right | Left Rotation |
+| LR | Left → Right | Left Rotation + Right Rotation |
+| RL | Right → Left | Right Rotation + Left Rotation |
+
+---
+
+## LL Case
+
+Insert:
+
+```text
+30, 20, 10
+```
+
+Before fixing:
+
+```text
+       30(B)
+       /
+    20(R)
+    /
+ 10(R)
+```
+
+This is **LL**.
+
+Perform **Right Rotation**:
+
+```text
+       20(B)
+      /    \
+   10(R)  30(R)
+```
+
+---
+
+## RR Case
+
+Insert:
+
+```text
+10, 20, 30
+```
+
+Before fixing:
+
+```text
+10(B)
+   \
+   20(R)
+      \
+      30(R)
+```
+
+This is **RR**.
+
+Perform **Left Rotation**:
+
+```text
+       20(B)
+      /    \
+   10(R)  30(R)
+```
+
+---
+
+## LR Case
+
+Insert:
+
+```text
+30, 10, 20
+```
+
+Before fixing:
+
+```text
+      30(B)
+      /
+   10(R)
+      \
+      20(R)
+```
+
+First:
+
+**Left Rotation at 10**
+
+```text
+      30(B)
+      /
+   20(R)
+   /
+ 10(R)
+```
+
+Then:
+
+**Right Rotation at 30**
+
+```text
+      20(B)
+     /    \
+  10(R)  30(R)
+```
+
+---
+
+## RL Case
+
+Insert:
+
+```text
+10, 30, 20
+```
+
+Before fixing:
+
+```text
+10(B)
+   \
+   30(R)
+   /
+ 20(R)
+```
+
+First:
+
+**Right Rotation at 30**
+
+```text
+10(B)
+   \
+   20(R)
+      \
+      30(R)
+```
+
+Then:
+
+**Left Rotation at 10**
+
+```text
+       20(B)
+      /    \
+   10(R)  30(R)
+```
+
+---
+
+# 5. Simple C Program — Red-Black Tree Insertion
+
+This version performs **insertion only**, uses rotations and recoloring, and keeps the implementation relatively short.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define RED 1
+#define BLACK 0
+
+typedef struct Node {
+    int data, color;
+    struct Node *left, *right, *parent;
+} Node;
+
+Node *root = NULL;
+
+Node* newNode(int x) {
+    Node *n = malloc(sizeof(Node));
+    n->data = x;
+    n->color = RED;
+    n->left = n->right = n->parent = NULL;
+    return n;
+}
+
+void leftRotate(Node *x) {
+    Node *y = x->right;
+    x->right = y->left;
+
+    if (y->left) y->left->parent = x;
+    y->parent = x->parent;
+
+    if (!x->parent) root = y;
+    else if (x == x->parent->left) x->parent->left = y;
+    else x->parent->right = y;
+
+    y->left = x;
+    x->parent = y;
+}
+
+void rightRotate(Node *x) {
+    Node *y = x->left;
+    x->left = y->right;
+
+    if (y->right) y->right->parent = x;
+    y->parent = x->parent;
+
+    if (!x->parent) root = y;
+    else if (x == x->parent->left) x->parent->left = y;
+    else x->parent->right = y;
+
+    y->right = x;
+    x->parent = y;
+}
+
+void fixInsert(Node *z) {
+    while (z != root && z->parent->color == RED) {
+        Node *p = z->parent;
+        Node *g = p->parent;
+
+        if (p == g->left) {
+            Node *u = g->right;
+
+            if (u && u->color == RED) {
+                p->color = BLACK;
+                u->color = BLACK;
+                g->color = RED;
+                z = g;
+            } else {
+                if (z == p->right) {
+                    z = p;
+                    leftRotate(z);
+                    p = z->parent;
+                    g = p->parent;
+                }
+                p->color = BLACK;
+                g->color = RED;
+                rightRotate(g);
+            }
+        } else {
+            Node *u = g->left;
+
+            if (u && u->color == RED) {
+                p->color = BLACK;
+                u->color = BLACK;
+                g->color = RED;
+                z = g;
+            } else {
+                if (z == p->left) {
+                    z = p;
+                    rightRotate(z);
+                    p = z->parent;
+                    g = p->parent;
+                }
+                p->color = BLACK;
+                g->color = RED;
+                leftRotate(g);
+            }
+        }
+    }
+
+    root->color = BLACK;
+}
+
+void insert(int x) {
+    Node *z = newNode(x);
+    Node *p = NULL, *q = root;
+
+    while (q) {
+        p = q;
+        q = (x < q->data) ? q->left : q->right;
+    }
+
+    z->parent = p;
+
+    if (!p) root = z;
+    else if (x < p->data) p->left = z;
+    else p->right = z;
+
+    fixInsert(z);
+}
+
+void inorder(Node *r) {
+    if (!r) return;
+    inorder(r->left);
+    printf("%d(%s) ", r->data, r->color ? "R" : "B");
+    inorder(r->right);
+}
+
+int main() {
+    int n, x;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter elements: ");
+    while (n--) {
+        scanf("%d", &x);
+        insert(x);
+    }
+
+    printf("Inorder: ");
+    inorder(root);
+
+    return 0;
+}
+```
+
+---
+
+# 6. Example
+
+### Input
+
+```text
+7
+10 20 30 15 25 5 1
+```
+
+The program inserts each value as a BST and automatically performs:
+
+- Recoloring
+- Left rotation
+- Right rotation
+- Root correction
+
+Possible final tree:
+
+```text
+          20(B)
+        /      \
+     10(R)     30(B)
+     /  \       /
+   5(B) 15(B) 25(R)
+   /
+ 1(R)
+```
+
+The exact structure depends on the insertion sequence.
+
+---
+
+# 7. Important Functions
+
+| Function | Purpose |
+|---|---|
+| `newNode()` | Creates a RED node |
+| `insert()` | Performs BST insertion |
+| `fixInsert()` | Repairs Red-Black violations |
+| `leftRotate()` | Performs left rotation |
+| `rightRotate()` | Performs right rotation |
+| `inorder()` | Displays the tree |
+
+### Most important function
+
+```c
+fixInsert()
+```
+
+It handles:
+
+```text
+RED + RED
+   ↓
+Check Uncle
+   ↓
+RED uncle → Recolor
+BLACK uncle → Rotation + Recolor
+```
+
+---
+
+# 8. Time Complexity
+
+A Red-Black Tree always maintains height:
+
+\[
+h = O(\log n)
+\]
+
+### Insertion
+
+Normal BST insertion:
+
+\[
+O(\log n)
+\]
+
+Fixing the tree:
+
+\[
+O(\log n)
+\]
+
+Therefore:
+
+\[
+\boxed{\text{Insertion Time} = O(\log n)}
+\]
+
+### Rotations
+
+Each rotation takes:
+
+\[
+O(1)
+\]
+
+Only a constant number of rotations are needed during one insertion, while recoloring may move upward through the tree.
+
+Therefore overall:
+
+\[
+\boxed{O(\log n)}
+\]
+
+---
+
+# 9. Space Complexity
+
+Each node stores:
+
+```text
+data
+color
+left pointer
+right pointer
+parent pointer
+```
+
+For `n` nodes:
+
+\[
+\boxed{O(n)}
+\]
+
+The recursive `inorder()` also uses stack space proportional to tree height:
+
+\[
+O(\log n)
+\]
+
+So the **tree storage** is:
+
+\[
+\boxed{O(n)}
+\]
+
+---
+
+# 10. Exam Answer — Short Summary
+
+**Red-Black Tree insertion algorithm:**
+
+```text
+1. Insert node using BST rules.
+2. Color the new node RED.
+3. If parent is BLACK → stop.
+4. If parent is RED:
+      a) Uncle RED → recolor.
+      b) Uncle BLACK → rotation + recoloring.
+5. Repeat if violation moves upward.
+6. Color root BLACK.
+```
+
+### Complexity
+
+| Operation | Time | Space |
+|---|---:|---:|
+| Search | O(log n) | O(1) |
+| **Insertion** | **O(log n)** | **O(n)** |
+| Left Rotation | O(1) | O(1) |
+| Right Rotation | O(1) | O(1) |
+
+**One-line memory trick:**
+
+> **BST Insert → RED → Check Parent → Check Uncle → Recolor/Rotate → Root BLACK.**
