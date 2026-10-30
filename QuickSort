@@ -1,0 +1,65 @@
+QUESTION: 
+Sort a given set of elements using quick sort and determine the time required to sort the elements. Repeat the experiment for different values of n, the number of elements 
+in the list to be sorted and plot a graph of the time taken versus n inputs. The elements can be read from a fi le or can be generated using the random number generator. 
+
+CODE : 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void quicksort(int a[], int low, int high)
+{
+    if (low >= high) return;
+
+    int pivot = a[low], i = low + 1, j = high, temp;
+
+    while (i <= j) {
+        while (i <= high && a[i] <= pivot) i++;
+        while (a[j] > pivot) j--;
+
+        if (i < j) {
+            temp = a[i]; a[i] = a[j]; a[j] = temp;
+        }
+    }
+
+    a[low] = a[j];
+    a[j] = pivot;
+
+    quicksort(a, low, j - 1);
+    quicksort(a, j + 1, high);
+}
+
+int main()
+{
+    int a[10000], n, i;
+    clock_t start, end;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    srand(time(NULL));
+    for (i = 0; i < n; i++) a[i] = rand() % 100000;
+
+    printf("Before sorting:\n");
+    for (i = 0; i < n; i++) printf("%d ", a[i]);
+
+    start = clock();
+    quicksort(a, 0, n - 1);
+    end = clock();
+
+    printf("\nAfter sorting:\n");
+    for (i = 0; i < n; i++) printf("%d ", a[i]);
+
+    printf("\nTime taken: %f seconds\n",
+           (double)(end - start) / CLOCKS_PER_SEC);
+
+    return 0;
+}
+
+OUTPUT :
+Enter the number of elements: 10 
+Elements before sorting:  41 67 12 89 23 5 76 34 51 18 
+Elements after sorting: 5 12 18 23 34 41 51 67 76 89
+Number of elements (n) = 10 
+Time required = 0.000002 seconds 
