@@ -1,0 +1,66 @@
+Sort a given set of elements using the following methods and determine the time required to sort the elements.
+Repeat the experiment for diff erent values of n, the number of elements in the list to be sorted and plot a graph of
+the time taken versus n inputs. The elements can be read from a fi le or can be generated using the random number generator.
+a) Quick sort b) Merge sort
+CODE: 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int a[100000], temp[100000];
+
+void merge(int l, int m, int r) {
+    int i=l, j=m+1, k=l;
+    while(i<=m && j<=r)
+        temp[k++]=(a[i]<a[j]) ? a[i++] : a[j++];
+    while(i<=m) temp[k++]=a[i++];
+    while(j<=r) temp[k++]=a[j++];
+    for(i=l; i<=r; i++) a[i]=temp[i];
+}
+
+void sort(int l, int r) {
+    if(l<r) {
+        int m=(l+r)/2;
+        sort(l,m);
+        sort(m+1,r);
+        merge(l,m,r);
+    }
+}
+
+int main() {
+    int sizes[]={1000,5000,10000,20000,50000};
+    int n, i, j;
+    double t;
+    clock_t start, end;
+    FILE *f=fopen("data.txt","w");
+
+    if(f==NULL) return 1;
+    srand(time(NULL));
+
+    for(j=0; j<5; j++) {
+        n=sizes[j];
+        for(i=0; i<n; i++) a[i]=rand()%100000;
+
+        start=clock();
+        sort(0,n-1);
+        end=clock();
+
+        t=(double)(end-start)/CLOCKS_PER_SEC;
+        printf("n=%d Time=%f seconds\n",n,t);
+        fprintf(f,"%d %f\n",n,t);
+    }
+    fclose(f);
+
+    FILE *g=fopen("plot.gp","w");
+    if(g==NULL) return 1;
+    fprintf(g,"set title 'Merge Sort Time Complexity'\n");
+    fprintf(g,"set xlabel 'Number of Elements (n)'\n");
+    fprintf(g,"set ylabel 'Time Taken (seconds)'\n");
+    fprintf(g,"set grid\n");
+    fprintf(g,"plot 'data.txt' using 1:2 with linespoints title 'Merge Sort'\n");
+    fclose(g);
+
+    system("gnuplot -persist plot.gp");
+    return 0;
+}
