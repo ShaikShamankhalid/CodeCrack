@@ -1,0 +1,49 @@
+Question : 
+
+Search for a given set of elements using the Binary Search and determine the time required to search the given element. 
+Repeat the experiment for different values of n, the number of elements in the list to be sorted and plot a graph of the time taken versus number of elements.
+The elements can be read from a file or can be generated using the random number generator.
+
+CODE: 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    int a[100000], n, key, low, high, mid, i, found;
+    FILE *f = fopen("data.txt", "w");
+
+    srand(time(NULL));
+
+    for (n = 1000; n <= 10000; n += 1000) {
+        for (i = 0; i < n; i++)
+            a[i] = i * 2;  // Sorted elements
+
+        key = a[n / 2];   // Element to search
+        low = 0;
+        high = n - 1;
+        found = 0;
+
+        clock_t start = clock();
+
+        while (low <= high) {
+            mid = (low + high) / 2;
+            if (a[mid] == key) {
+                found = 1;
+                break;
+            }
+            else if (a[mid] < key)
+                low = mid + 1;
+            else
+                high = mid - 1;
+        }
+
+        double t = (double)(clock() - start) / CLOCKS_PER_SEC;
+        printf("n = %d, Time = %f seconds\n", n, t);
+        fprintf(f, "%d %f\n", n, t);
+    }
+
+    fclose(f);
+    return 0;
+}
