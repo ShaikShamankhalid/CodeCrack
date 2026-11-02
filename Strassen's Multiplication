@@ -1,0 +1,84 @@
+Implement the following using divide and conquer approach.
+To multiply two given square matrices using Strassen’s matrix multiplication
+
+CODE : 
+
+#include <stdio.h>
+#define N 2
+
+void add(int n, int a[n][n], int b[n][n], int c[n][n], int s) {
+    for (int i=0; i<n; i++)
+        for (int j=0; j<n; j++)
+            c[i][j] = a[i][j] + s*b[i][j];
+}
+
+void strassen(int n, int a[n][n], int b[n][n], int c[n][n]) {
+    if (n == 1) {
+        c[0][0] = a[0][0] * b[0][0];
+        return;
+    }
+
+    int k = n/2;
+    int a11[k][k], a12[k][k], a21[k][k], a22[k][k];
+    int b11[k][k], b12[k][k], b21[k][k], b22[k][k];
+    int m1[k][k], m2[k][k], m3[k][k], m4[k][k];
+    int m5[k][k], m6[k][k], m7[k][k];
+    int x[k][k], y[k][k], t[k][k];
+
+    // Divide matrices into four parts
+    for (int i=0; i<k; i++)
+        for (int j=0; j<k; j++) {
+            a11[i][j]=a[i][j];     b11[i][j]=b[i][j];
+            a12[i][j]=a[i][j+k];   b12[i][j]=b[i][j+k];
+            a21[i][j]=a[i+k][j];   b21[i][j]=b[i+k][j];
+            a22[i][j]=a[i+k][j+k]; b22[i][j]=b[i+k][j+k];
+        }
+
+    // Calculate seven products recursively
+    add(k,a11,a22,x,1); add(k,b11,b22,y,1);
+    strassen(k,x,y,m1);
+
+    add(k,a21,a22,x,1); strassen(k,x,b11,m2);
+
+    add(k,b12,b22,y,-1); strassen(k,a11,y,m3);
+
+    add(k,b21,b11,y,-1); strassen(k,a22,y,m4);
+
+    add(k,a11,a12,x,1); strassen(k,x,b22,m5);
+
+    add(k,a21,a11,x,-1); add(k,b11,b12,y,1);
+    strassen(k,x,y,m6);
+
+    add(k,a12,a22,x,-1); add(k,b21,b22,y,1);
+    strassen(k,x,y,m7);
+
+    // Combine seven products into result matrix
+    for (int i=0; i<k; i++)
+        for (int j=0; j<k; j++) {
+            c[i][j]     = m1[i][j]+m4[i][j]-m5[i][j]+m7[i][j];
+            c[i][j+k]   = m3[i][j]+m5[i][j];
+            c[i+k][j]   = m2[i][j]+m4[i][j];
+            c[i+k][j+k] = m1[i][j]-m2[i][j]+m3[i][j]+m6[i][j];
+        }
+}
+
+int main() {
+    int a[N][N], b[N][N], c[N][N];
+
+    printf("Enter first matrix:\n");
+    for(int i=0;i<N;i++)
+        for(int j=0;j<N;j++) scanf("%d",&a[i][j]);
+
+    printf("Enter second matrix:\n");
+    for(int i=0;i<N;i++)
+        for(int j=0;j<N;j++) scanf("%d",&b[i][j]);
+
+    strassen(N,a,b,c);
+
+    printf("Result matrix:\n");
+    for(int i=0;i<N;i++) {
+        for(int j=0;j<N;j++) printf("%d ",c[i][j]);
+        printf("\n");
+    }
+    return 0;
+}
