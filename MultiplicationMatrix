@@ -1,0 +1,106 @@
+Implementing the following using divide and conquer approach.
+To multiply two given square matrices.
+
+Normal Code : 
+#include <stdio.h>
+
+int a[10][10], b[10][10], c[10][10], n;
+
+void multiply(int r, int col, int size)
+{
+    if (size == 1)
+    {
+        c[r][col] += a[r][col] * b[r][col];
+        return;
+    }
+
+    int k;
+    for (k = 0; k < size; k++)
+        c[r][col] += a[r][k] * b[k][col];
+}
+
+int main()
+{
+    int i, j, k;
+
+    printf("Enter matrix size: ");
+    scanf("%d", &n);
+
+    printf("Enter first matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+
+    printf("Enter second matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            scanf("%d", &b[i][j]);
+
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            for (k = 0; k < n; k++)
+                c[i][j] += a[i][k] * b[k][j];
+
+    printf("Resultant matrix:\n");
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n; j++)
+            printf("%d ", c[i][j]);
+        printf("\n");
+    }
+
+    return 0;
+}
+
+Code using Divide and Conquer :
+
+
+#include <stdio.h>
+
+int a[8][8], b[8][8], c[8][8];
+
+void multiply(int n, int r, int col, int k)
+{
+    int i, j;
+
+    if (n == 1) {
+        c[r][col] += a[r][k] * b[k][col];
+        return;
+    }
+
+    for (i = 0; i < n / 2; i++)
+        for (j = 0; j < n / 2; j++)
+            multiply(n / 2, r + i, col + j, k);
+}
+
+int main()
+{
+    int n, i, j, k;
+
+    printf("Enter size (power of 2, max 8): ");
+    scanf("%d", &n);
+
+    printf("Enter first matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+
+    printf("Enter second matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            scanf("%d", &b[i][j]);
+
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            for (k = 0; k < n; k++)
+                c[i][j] += a[i][k] * b[k][j];
+
+    printf("Resultant matrix:\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++)
+            printf("%d ", c[i][j]);
+        printf("\n");
+    }
+
+    return 0;
+}
