@@ -49,3 +49,15 @@ int main() {
     printf("\nMaximum profit = %d\n", profit);
     return 0;
 }
+
+Sample Input:
+Enter number of jobs: 5
+Enter job ID, deadline and profit: 1 2 100
+Enter job ID, deadline and profit: 2 1 19
+Enter job ID, deadline and profit: 3 2 27
+Enter job ID, deadline and profit: 4 1 25
+Enter job ID, deadline and profit: 5 3 15
+
+Sample Output:
+Scheduled jobs: J3 J1 J5
+Maximum profit = 142
