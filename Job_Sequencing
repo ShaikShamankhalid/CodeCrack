@@ -1,0 +1,51 @@
+Design the Algorithm to solve Job sequencing with deadlines problem and Analyze its time complexity. 
+Implement the above algorithm using Greedy method
+
+CODE : 
+
+#include <stdio.h>
+
+int main() {
+    int n, i, j, maxD = 0, profit = 0;
+
+    printf("Enter number of jobs: ");
+    scanf("%d", &n);
+
+    int id[n], d[n], p[n];
+
+    for (i = 0; i < n; i++) {
+        printf("Enter job ID, deadline and profit: ");
+        scanf("%d%d%d", &id[i], &d[i], &p[i]);
+        if (d[i] > maxD) maxD = d[i];
+    }
+
+    // Sort jobs by decreasing profit
+    for (i = 0; i < n - 1; i++)
+        for (j = 0; j < n - i - 1; j++)
+            if (p[j] < p[j + 1]) {
+                int t;
+                t = p[j]; p[j] = p[j + 1]; p[j + 1] = t;
+                t = d[j]; d[j] = d[j + 1]; d[j + 1] = t;
+                t = id[j]; id[j] = id[j + 1]; id[j + 1] = t;
+            }
+
+    int slot[maxD + 1];
+    for (i = 0; i <= maxD; i++) slot[i] = -1;
+
+    // Assign each job to the latest available slot
+    for (i = 0; i < n; i++)
+        for (j = d[i]; j >= 1; j--)
+            if (slot[j] == -1) {
+                slot[j] = i;
+                profit += p[i];
+                break;
+            }
+
+    printf("\nScheduled jobs: ");
+    for (i = 1; i <= maxD; i++)
+        if (slot[i] != -1)
+            printf("J%d ", id[slot[i]]);
+
+    printf("\nMaximum profit = %d\n", profit);
+    return 0;
+}
