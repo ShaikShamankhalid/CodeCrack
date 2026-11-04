@@ -1,0 +1,28 @@
+Question : 
+Problem: Trapping Rain Water (LeetCode 42)
+Given an array representing the heights of bars, calculate how much rainwater can be trapped between them.
+
+Example
+height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+
+Output:
+6
+
+CODE : 
+
+height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+
+left, right = 0, len(height) - 1
+left_max = right_max = water = 0
+
+while left < right:
+    if height[left] < height[right]:
+        left_max = max(left_max, height[left])
+        water += left_max - height[left]
+        left += 1
+    else:
+        right_max = max(right_max, height[right])
+        water += right_max - height[right]
+        right -= 1
+
+print(water)
