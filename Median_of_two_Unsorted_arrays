@@ -23,13 +23,28 @@ nums2.length == n
 
 
 Code:
-class Solution:
-    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
-        c = nums1 + nums2
-        d = sorted(c)
-        n = len(d)
+# Take first unsorted array as input
+nums1 = list(map(int, input().split()))
 
-        if n % 2 != 0:
-            return float(d[n // 2])
-        else:
-            return (d[n // 2 - 1] + d[n // 2]) / 2
+# Take second unsorted array as input
+nums2 = list(map(int, input().split()))
+
+# Combine both arrays and sort in ascending order
+arr = sorted(nums1 + nums2)
+
+# Find total number of elements
+n = len(arr)
+
+# Check whether the total number of elements is even
+if n % 2 == 0:
+
+    # Calculate average of two middle elements
+    median = (arr[n//2 - 1] + arr[n//2]) / 2
+
+else:
+
+    # Get the middle element when the count is odd
+    median = arr[n//2]
+
+# Display the median
+print(median)
