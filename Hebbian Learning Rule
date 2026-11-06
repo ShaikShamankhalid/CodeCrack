@@ -1,0 +1,27 @@
+
+
+CODE : 
+gates = {
+    "AND":  [0, 0, 0, 1],
+    "OR":   [0, 1, 1, 1],
+    "NAND": [1, 1, 1, 0],
+    "NOR":  [1, 0, 0, 0],
+    "XOR":  [0, 1, 1, 0],
+    "XNOR": [1, 0, 0, 1]
+}
+
+x = [[0,0], [0,1], [1,0], [1,1]]
+eta = 1
+
+for gate, y in gates.items():
+
+    w = [0, 0]
+    b = 0
+
+    for i in range(4):
+        for j in range(2):
+            w[j] += eta * x[i][j] * y[i]
+
+        b += eta * y[i]
+
+    print(gate, "Weights:", w, "Bias:", b)
