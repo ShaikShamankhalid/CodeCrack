@@ -1,0 +1,54 @@
+Problem : Missionaries and Cannibals Problem
+- deque() – Creates BFS queue.
+- moves – Possible boat movements.
+- visited – Avoids repeated states.
+- boat = 0 – Boat on left.
+- boat = 1 – Boat on right.
+- 1-boat – Changes boat position.
+Time Complexity: \(O(V+E)\)
+
+Space Complexity: \(O(V)\)
+
+CODE : 
+
+from collections import deque
+
+m = int(input("Enter number of Missionaries: "))
+c = int(input("Enter number of Cannibals: "))
+
+start = (m, c, 0)
+goal = (0, 0, 1)
+
+moves = [(1,0), (2,0), (0,1), (0,2), (1,1)]
+
+q = deque([(start, [])])
+visited = set()
+
+while q:
+    (a, b, boat), path = q.popleft()
+
+    if (a, b, boat) == goal:
+        for s in path + [(a,b,boat)]:
+            print(s)
+        break
+
+    if (a,b,boat) in visited:
+        continue
+    visited.add((a,b,boat))
+
+    for x, y in moves:
+        if boat == 0:
+            p, r = a-x, b-y
+        else:
+            p, r = a+x, b+y
+
+        if not (0 <= p <= m and 0 <= r <= c):
+            continue
+
+        if (p > 0 and p < r) or (m-p > 0 and m-p < c-r):
+            continue
+
+        q.append(((p,r,1-boat), path+[(a,b,boat)]))
+
+else:
+    print("No solution exists")
