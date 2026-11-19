@@ -64,3 +64,38 @@ int main() {
     system("gnuplot -persist plot.gp");
     return 0;
 }
+
+
+Normal code : 
+#include <stdio.h>
+int a[100000], temp[100000];
+void merge(int l, int m, int r){
+    int i = l, j = m + 1, k = l;
+    while (i <= m && j <= r)
+        temp[k++] = (a[i] < a[j]) ? a[i++] : a[j++];
+    while (i <= m) temp[k++] = a[i++];
+    while (j <= r) temp[k++] = a[j++];
+    for (i = l; i <= r; i++)
+        a[i] = temp[i];
+}
+void sort(int l, int r) {
+    if (l < r) {
+        int m = (l + r) / 2;
+        sort(l, m);
+        sort(m + 1, r);
+        merge(l, m, r);
+    }
+}
+int main() {
+    int n, i;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+    printf("Enter elements: ");
+    for (i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+    sort(0, n - 1);
+    printf("Sorted elements: ");
+    for (i = 0; i < n; i++)
+        printf("%d ", a[i]);
+    return 0;
+}
