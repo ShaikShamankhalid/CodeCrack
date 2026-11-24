@@ -82,3 +82,93 @@ int main() {
     }
     return 0;
 }
+
+Code for 2*2 matrix :
+
+
+#include<stdio.h>
+int main()
+{
+    int a[2][2],b[2][2],c[2][2];
+    int p1,p2,p3,p4,p5,p6,p7;
+    int i,j;
+
+    printf("Enter first matrix:");
+    for(i=0;i<2;i++)
+        for(j=0;j<2;j++)
+            scanf("%d",&a[i][j]);
+
+    printf("Enter second matrix:");
+    for(i=0;i<2;i++)
+        for(j=0;j<2;j++)
+            scanf("%d",&b[i][j]);
+
+    // Strassen seven multiplications
+
+    p1=(a[0][0]+a[1][1])*(b[0][0]+b[1][1]);
+
+    p2=(a[1][0]+a[1][1])*b[0][0];
+
+    p3=a[0][0]*(b[0][1]-b[1][1]);
+
+    p4=a[1][1]*(b[1][0]-b[0][0]);
+
+    p5=(a[0][0]+a[0][1])*b[1][1];
+
+    p6=(a[1][0]-a[0][0])*(b[0][0]+b[0][1]);
+
+    p7=(a[0][1]-a[1][1])*(b[1][0]+b[1][1]);
+
+    // Calculate result matrix
+
+    c[0][0]=p1+p4-p5+p7;
+    c[0][1]=p3+p5;
+    c[1][0]=p2+p4;
+    c[1][1]=p1-p2+p3+p6;
+
+    printf("Result matrix:\n");
+
+    for(i=0;i<2;i++)
+    {
+        for(j=0;j<2;j++)
+            printf("%d ",c[i][j]);
+
+        printf("\n");
+    }
+
+    return 0;
+}
+
+1. First remember the matrix
+\[
+A=\begin{bmatrix}a&b\\c&d\end{bmatrix}
+\quad
+B=\begin{bmatrix}e&f\\g&h\end{bmatrix}
+\]
+
+2. Seven formulas – easy memory trick
+Formula	Easy way to remember
+P1	(a+d) × (e+h)
+P2	(c+d) × e
+P3	a × (f-h)
+P4	d × (g-e)
+P5	(a+b) × h
+P6	(c-a) × (e+f)
+P7	(b-d) × (g+h)
+
+Memorize these patterns:
+- P1: Both diagonals added.
+- P2: Last row of A + first element of B.
+- P3: First element of A × (f-h).
+- P4: Last element of A × (g-e).
+- P5: First row of A × last element of B.
+- P6: (c-a) × (e+f).
+- P7: (b-d) × (g+h).
+
+3. Final answer formulas
+
+Position	Formula
+C11	1 + 4 - 5 + 7
+C12	3 + 5
+C21	2 + 4
+C22	1 - 2 + 3 + 6
