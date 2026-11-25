@@ -57,6 +57,60 @@ int main()
     return 0;
 }
 
+Simple Code:
+
+#include <stdio.h>
+
+void quicksort(int a[], int low, int high)
+{
+    if (low >= high)
+        return;
+
+    int pivot = a[low], i = low + 1, j = high, temp;
+
+    while (i <= j)
+    {
+        while (i <= high && a[i] <= pivot)
+            i++;
+
+        while (a[j] > pivot)
+            j--;
+
+        if (i < j)
+        {
+            temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+        }
+    }
+
+    a[low] = a[j];
+    a[j] = pivot;
+
+    quicksort(a, low, j - 1);
+    quicksort(a, j + 1, high);
+}
+
+int main()
+{
+    int a[100], n, i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements: ");
+    for (i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    quicksort(a, 0, n - 1);
+
+    printf("Sorted elements:\n");
+    for (i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}
+
 OUTPUT :
 Enter the number of elements: 10 
 Elements before sorting:  41 67 12 89 23 5 76 34 51 18 
